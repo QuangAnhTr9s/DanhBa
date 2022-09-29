@@ -19,7 +19,8 @@
             android:layout_height="50sp"
             android:hint="@string/name"
             android:inputType="text"
-            android:textSize="20sp" />
+            android:textSize="20sp"
+            android:importantForAutofill="no" />
 
         <EditText
             android:textSize="20sp"
@@ -29,7 +30,8 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:maxLength="11"
-            android:textColorHint="#757575" />
+            android:textColorHint="#757575"
+            android:importantForAutofill="no" />
     </LinearLayout>
 
 

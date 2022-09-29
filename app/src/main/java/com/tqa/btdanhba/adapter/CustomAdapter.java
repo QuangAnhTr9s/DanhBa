@@ -19,13 +19,13 @@ import java.util.List;
 public class CustomAdapter extends ArrayAdapter<Contact> {
     private Context context;
     private int resource;
-    private List<Contact> arrContact;
+    private List<Contact> listContact;
 
     public CustomAdapter(@NonNull Context context, int resource, @NonNull List<Contact> objects) {
         super(context, resource, objects);
         this.context = context;
         this.resource = resource;
-        this.arrContact = objects;
+        this.listContact = objects;
     }
 
     @NonNull
@@ -43,7 +43,7 @@ public class CustomAdapter extends ArrayAdapter<Contact> {
         } else {
             viewHolder = (ViewHolder) convertView.getTag();
         }
-        Contact contact = arrContact.get(position);
+        Contact contact = listContact.get(position);
         viewHolder.txt_name.setText(contact.getmName());
         viewHolder.txt_phoneNumber.setText(contact.getmPhoneNumber());
 

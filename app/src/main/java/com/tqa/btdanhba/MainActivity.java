@@ -1,7 +1,6 @@
 package com.tqa.btdanhba;
 
 import androidx.appcompat.app.AppCompatActivity;
-import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
 import android.content.SharedPreferences;
@@ -14,7 +13,6 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.tqa.btdanhba.adapter.CustomAdapter;
 import com.tqa.btdanhba.model.Contact;
-import com.tqa.btdanhba.model.FragmentSetting;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -23,18 +21,58 @@ import java.util.List;
 
 public class MainActivity extends AppCompatActivity {
     private CustomAdapter customAdapter;
-    private ArrayList<Contact> arrayContact;
+    private List<Contact> listContact;
     private ListView lv_danhBa;
     private ImageButton imgbtn_add;
     private SharedPreferences sharedPreferences;
-    FragmentManager fragmentManager = getSupportFragmentManager();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
         setWiget();
-        arrayContact = new ArrayList<>();
+        listContact = new ArrayList<>();
+        getDataFromSharedPreferences();
+
+        recieveDataFragmentAdd();
+
+        imgbtn_add.setOnClickListener(v -> {
+            FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+            fragmentTransaction.add(R.id.main_activity, new FragmentAdd(), "FragmentAdd");
+            fragmentTransaction.addToBackStack("FragAdd");
+            fragmentTransaction.commit();
+        });
+        customAdapter = new CustomAdapter(this, R.layout.row_item_contact, listContact);
+        lv_danhBa.setAdapter(customAdapter);
+        lv_danhBa.setOnItemClickListener((parent, view, position, id) -> sendDataToFragmentSetting(position));
+        recieveDataFragmentSetting();
+
+    }
+
+    private void recieveDataFragmentSetting() {
+    }
+
+    private void sendDataToFragmentSetting(int position) {
+        String dataPhoneNumber = listContact.get(position).getmPhoneNumber();
+        String dataName = listContact.get(position).getmName();
+        boolean dataIsMale = listContact.get(position).isMale();
+
+        Bundle bundle = new Bundle();
+        bundle.putString("data_phone_number", dataPhoneNumber);
+        bundle.putString("data_name", dataName);
+        bundle.putBoolean("data_is_male", dataIsMale);
+        bundle.putInt("position", position);
+
+        FragmentSetting fragmentSetting = new FragmentSetting();
+        fragmentSetting.setArguments(bundle);
+
+        FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+        fragmentTransaction.replace(R.id.main_activity, fragmentSetting);
+        fragmentTransaction.addToBackStack("FragSetting");
+        fragmentTransaction.commit();
+    }
+
+    private void getDataFromSharedPreferences() {
         //lay du lieu tu sharedPreferences
         sharedPreferences = getSharedPreferences("dataContact", MODE_PRIVATE);
         //lay du lieu tu sharedPreferences ra list
@@ -43,25 +81,8 @@ public class MainActivity extends AppCompatActivity {
         if (stringListContact != null) {
             Type type = new TypeToken<List<Contact>>() {
             }.getType();
-            arrayContact = gson.fromJson(stringListContact, type);
+            listContact = gson.fromJson(stringListContact, type);
         }
-        customAdapter = new CustomAdapter(this, R.layout.row_item_contact, arrayContact);
-        lv_danhBa.setAdapter(customAdapter);
-        lv_danhBa.setOnClickListener(view -> {
-            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-            fragmentTransaction.add(R.id.main_activity, new FragmentSetting(), "FragmentSetting");
-            fragmentTransaction.addToBackStack("FragSetting");
-            fragmentTransaction.commit();
-        });
-        recieveDataFragmentAdd();
-
-        imgbtn_add.setOnClickListener(v -> {
-            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-            fragmentTransaction.add(R.id.main_activity, new FragmentAdd(), "FragmentAdd");
-            fragmentTransaction.addToBackStack("FragAdd");
-            fragmentTransaction.commit();
-        });
-
     }
 
     private void recieveDataFragmentAdd() {
@@ -71,11 +92,11 @@ public class MainActivity extends AppCompatActivity {
 //        Contact contact = (Contact) bundle.get("obj_contact");
 
         if (bundle != null) {
-            Contact contact = (Contact) bundle.getParcelable("obj_contact");
+            Contact contact = bundle.getParcelable("obj_contact");
             if (checkTK(contact)) {
                 Toast.makeText(this, "Số điện thoại này đã tồn tại!", Toast.LENGTH_SHORT).show();
             } else {
-                arrayContact.add(contact);
+                listContact.add(contact);
                 Toast.makeText(this, "Đã thêm số điện thoại vào danh bạ!", Toast.LENGTH_SHORT).show();
                 //cap nhat thay doi cho customAdapter
                 customAdapter.notifyDataSetChanged();
@@ -85,7 +106,7 @@ public class MainActivity extends AppCompatActivity {
         Gson gson = new Gson();
 
         SharedPreferences.Editor editor = sharedPreferences.edit();
-        String json = gson.toJson(arrayContact);
+        String json = gson.toJson(listContact);
         editor.putString("list_contact", json);
         editor.apply();
     }
@@ -99,7 +120,7 @@ public class MainActivity extends AppCompatActivity {
 //     duyet tung phan tu trong arrayContact, dem vi tri xuat hien cua so dien thoai vua nhap,
 //    neu xuat hien o vi tri >=0  thi return true
         for (Contact o :
-                arrayContact) {
+                listContact) {
             if (o.getmPhoneNumber().contains(contact.getmPhoneNumber())) {
                 return true;
             }

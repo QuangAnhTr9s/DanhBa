@@ -38,35 +38,30 @@ public class FragmentAdd extends Fragment {
         View view = inflater.inflate(R.layout.fragment_add, container, false);
         setWiget(view);
 
-        btn_addPhoneNumber.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                String name = edt_name.getText().toString().trim();
-                String phoneNumber = edt_phoneNumber.getText().toString().trim();
-                boolean isMale = true;
+        btn_addPhoneNumber.setOnClickListener(v -> {
+            String name = edt_name.getText().toString().trim();
+            String phoneNumber = edt_phoneNumber.getText().toString().trim();
+            boolean isMale = true;
 
-                //kiem tra thong tin da nhap chua
-                if (TextUtils.isEmpty(name) || TextUtils.isEmpty(phoneNumber)) {
-                    Toast.makeText(getActivity(), "Vui lòng nhập đầy đủ tên và số điện thoại!", Toast.LENGTH_SHORT).show();
-                } else {
-                    //kiem tra gioi tinh
-                    if (radioButton_male.isChecked()) {
-                        isMale = true;
-                    } else if (radioButton_female.isChecked()) {
-                        isMale = false;
-                    } else {
-                        Toast.makeText(getActivity(), "Vui lòng chọn giới tính!", Toast.LENGTH_SHORT).show();
-                    }
-                    if (radioButton_male.isChecked() || radioButton_female.isChecked()) {
-                        Contact contact = new Contact(isMale, name, phoneNumber);
+            //kiem tra thong tin da nhap chua
+            if (TextUtils.isEmpty(name) || TextUtils.isEmpty(phoneNumber)) {
+                Toast.makeText(getActivity(), "Vui lòng nhập đầy đủ tên và số điện thoại!", Toast.LENGTH_SHORT).show();
+            } else {
+                //kiem tra gioi tinh
+                if (!radioButton_female.isChecked() && !radioButton_male.isChecked()) {
+                    Toast.makeText(getActivity(), "Vui lòng chọn giới tính!", Toast.LENGTH_SHORT).show();
+                } else if (radioButton_female.isChecked()) {
+                    isMale = false;
+                }
+                if (radioButton_male.isChecked() || radioButton_female.isChecked()) {
+                    Contact contact = new Contact(isMale, name, phoneNumber);
 //                    Intent intent = new Intent(getActivity(), MainActivity.class);
 //                    intent.putExtra("obj_contact", contact);
-                        Intent intent = new Intent(getActivity(), MainActivity.class);
-                        Bundle bundle = new Bundle();
-                        bundle.putParcelable("obj_contact", contact);
-                        intent.putExtras(bundle);
-                        startActivity(intent);
-                    }
+                    Intent intent = new Intent(getActivity(), MainActivity.class);
+                    Bundle bundle = new Bundle();
+                    bundle.putParcelable("obj_contact", contact);
+                    intent.putExtras(bundle);
+                    startActivity(intent);
                 }
             }
         });
