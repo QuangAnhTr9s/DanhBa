@@ -3,6 +3,7 @@ package com.tqa.btdanhba;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentTransaction;
 
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.widget.ImageButton;
@@ -26,6 +27,10 @@ public class MainActivity extends AppCompatActivity {
     private ImageButton imgbtn_add;
     private SharedPreferences sharedPreferences;
 
+    public List<Contact> getListContact() {
+        return listContact;
+    }
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -35,6 +40,7 @@ public class MainActivity extends AppCompatActivity {
         getDataFromSharedPreferences();
 
         recieveDataFragmentAdd();
+        recieveDataFragmentSetting();
 
         imgbtn_add.setOnClickListener(v -> {
             FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
@@ -45,11 +51,16 @@ public class MainActivity extends AppCompatActivity {
         customAdapter = new CustomAdapter(this, R.layout.row_item_contact, listContact);
         lv_danhBa.setAdapter(customAdapter);
         lv_danhBa.setOnItemClickListener((parent, view, position, id) -> sendDataToFragmentSetting(position));
-        recieveDataFragmentSetting();
-
+        customAdapter.notifyDataSetChanged();
     }
 
     private void recieveDataFragmentSetting() {
+        Intent intentRDFS = getIntent();
+        Bundle bundleListContactFrag = intentRDFS.getBundleExtra("bundle_listContactFrag");
+        if (bundleListContactFrag != null) {
+            listContact = bundleListContactFrag.getParcelableArrayList("listContactFrag");
+            saveData(listContact);
+        }
     }
 
     private void sendDataToFragmentSetting(int position) {
@@ -86,27 +97,28 @@ public class MainActivity extends AppCompatActivity {
     }
 
     private void recieveDataFragmentAdd() {
-        //        Intent intent = getIntent();
-        Bundle bundle = getIntent().getExtras();
-//        Bundle bundle = getIntent().getExtras();
-//        Contact contact = (Contact) bundle.get("obj_contact");
+        Intent intentRDFA = getIntent();
+        Bundle bundleObjContact = intentRDFA.getBundleExtra("bundle_obj_contact");
 
-        if (bundle != null) {
-            Contact contact = bundle.getParcelable("obj_contact");
+        if (bundleObjContact != null) {
+            Contact contact = bundleObjContact.getParcelable("obj_contact");
             if (checkTK(contact)) {
                 Toast.makeText(this, "Số điện thoại này đã tồn tại!", Toast.LENGTH_SHORT).show();
             } else {
                 listContact.add(contact);
                 Toast.makeText(this, "Đã thêm số điện thoại vào danh bạ!", Toast.LENGTH_SHORT).show();
                 //cap nhat thay doi cho customAdapter
-                customAdapter.notifyDataSetChanged();
             }
         }
+        saveData(listContact);
+    }
+
+    private void saveData(List<Contact> listContact) {
         //luu list vao sharedPreferences
         Gson gson = new Gson();
 
         SharedPreferences.Editor editor = sharedPreferences.edit();
-        String json = gson.toJson(listContact);
+        String json = gson.toJson(this.listContact);
         editor.putString("list_contact", json);
         editor.apply();
     }
@@ -119,10 +131,12 @@ public class MainActivity extends AppCompatActivity {
     public boolean checkTK(Contact contact) {
 //     duyet tung phan tu trong arrayContact, dem vi tri xuat hien cua so dien thoai vua nhap,
 //    neu xuat hien o vi tri >=0  thi return true
-        for (Contact o :
-                listContact) {
-            if (o.getmPhoneNumber().contains(contact.getmPhoneNumber())) {
-                return true;
+        if (!listContact.isEmpty()) {
+            for (Contact o :
+                    listContact) {
+                if (contact.getmPhoneNumber() != null && o.getmPhoneNumber().contains(contact.getmPhoneNumber())) {
+                    return true;
+                }
             }
         }
         return false;

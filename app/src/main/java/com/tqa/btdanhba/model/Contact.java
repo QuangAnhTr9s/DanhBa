@@ -1,14 +1,10 @@
 package com.tqa.btdanhba.model;
 
-import android.os.Build;
 import android.os.Parcel;
 import android.os.Parcelable;
 
-import androidx.annotation.Nullable;
-import androidx.annotation.RequiresApi;
+import androidx.annotation.NonNull;
 
-import java.io.Serializable;
-import java.util.Objects;
 
 public class Contact implements Parcelable {
     //avatar de theo gioi tinh nen ta khai bao thuoc tinh isMale dang boolean
@@ -64,6 +60,15 @@ public class Contact implements Parcelable {
         this.mPhoneNumber = mPhoneNumber;
     }
 
+    @NonNull
+    @Override
+    public String toString() {
+        return
+                "isMale :" + isMale +
+                ", mName:'" + mName + '\'' +
+                ", mPhoneNumber:'" + mPhoneNumber + '\'' +
+                '}';
+    }
 
     @Override
     public int describeContents() {

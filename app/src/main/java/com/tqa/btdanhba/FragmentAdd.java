@@ -55,12 +55,10 @@ public class FragmentAdd extends Fragment {
                 }
                 if (radioButton_male.isChecked() || radioButton_female.isChecked()) {
                     Contact contact = new Contact(isMale, name, phoneNumber);
-//                    Intent intent = new Intent(getActivity(), MainActivity.class);
-//                    intent.putExtra("obj_contact", contact);
                     Intent intent = new Intent(getActivity(), MainActivity.class);
                     Bundle bundle = new Bundle();
                     bundle.putParcelable("obj_contact", contact);
-                    intent.putExtras(bundle);
+                    intent.putExtra("bundle_obj_contact",bundle);
                     startActivity(intent);
                 }
             }

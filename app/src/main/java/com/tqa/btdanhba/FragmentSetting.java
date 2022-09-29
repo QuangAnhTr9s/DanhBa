@@ -10,6 +10,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
+
+import com.tqa.btdanhba.model.Contact;
+
+import java.util.ArrayList;
 
 
 public class FragmentSetting extends Fragment {
@@ -18,12 +23,20 @@ public class FragmentSetting extends Fragment {
     private String dataPhoneNumber, dataName;
     private boolean dataIsMale = true;
     private int mPosition;
+    private MainActivity mMainActivity;
+    private ArrayList<Contact> listContactFrag;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         View view = inflater.inflate(R.layout.fragment_setting, container, false);
         setWiget(view);
+        mMainActivity = (MainActivity) getActivity();
+        listContactFrag = new ArrayList<>();
+        listContactFrag = (ArrayList<Contact>) mMainActivity.getListContact();
+//        for (Contact contact : listContactFrag = (ArrayList<Contact>) mMainActivity.getListContact()) {
+//            Toast.makeText(mMainActivity, contact.toString(), Toast.LENGTH_SHORT).show();
+//        }
 
         recieveDataFromMainActivity();
         edt_phoneNumber_frag_setting.setText(dataPhoneNumber);
@@ -33,15 +46,39 @@ public class FragmentSetting extends Fragment {
         } else {
             edt_is_male.setText("Nữ");
         }
-        btn_delete.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Intent intent = new Intent(getActivity(), MainActivity.class);
-                intent.putExtra("position_choose", mPosition);
-                startActivity(intent);
+        btn_delete.setOnClickListener(v -> {
+            listContactFrag.remove(mPosition);
+            sendToMain(listContactFrag);
+
+        });
+        btn_update.setOnClickListener(v -> {
+            String edtNameFragSetting = edt_name_frag_setting.getText().toString().trim();
+            if (!edtNameFragSetting.equalsIgnoreCase("")) {
+                listContactFrag.get(mPosition).setmName(edtNameFragSetting);
+            }
+            String edtPhoneNumberFragSetting = edt_phoneNumber_frag_setting.getText().toString().trim();
+            if (!edtPhoneNumberFragSetting.equalsIgnoreCase("")) {
+                listContactFrag.get(mPosition).setmPhoneNumber(edtPhoneNumberFragSetting);
+            }
+            if (edt_is_male.getText().toString().trim().equalsIgnoreCase("Nam")) {
+                listContactFrag.get(mPosition).setMale((true));
+                sendToMain(listContactFrag);
+            } else if (edt_is_male.getText().toString().trim().equalsIgnoreCase("Nữ")) {
+                listContactFrag.get(mPosition).setMale((false));
+                sendToMain(listContactFrag);
+            } else {
+                Toast.makeText(mMainActivity, "Bạn nhập sai giới tính!", Toast.LENGTH_SHORT).show();
             }
         });
         return view;
+    }
+
+    private void sendToMain(ArrayList<Contact> listContactFrag) {
+        Intent intent = new Intent(getActivity(), MainActivity.class);
+        Bundle bundle = new Bundle();
+        bundle.putParcelableArrayList("listContactFrag", listContactFrag);
+        intent.putExtra("bundle_listContactFrag",bundle);
+        startActivity(intent);
     }
 
     private void setWiget(View view) {
