@@ -1,4 +1,4 @@
-package com.tqa.btdanhba;
+package com.tqa.danhba;
 
 import org.junit.Test;
 

@@ -1,4 +1,4 @@
-package com.tqa.btdanhba.adapter;
+package com.tqa.danhba.adapter;
 
 import android.content.Context;
 import android.view.LayoutInflater;
@@ -11,8 +11,8 @@ import android.widget.TextView;
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 
-import com.tqa.btdanhba.R;
-import com.tqa.btdanhba.model.Contact;
+import com.tqa.danhba.R;
+import com.tqa.danhba.model.Contact;
 
 import java.util.List;
 

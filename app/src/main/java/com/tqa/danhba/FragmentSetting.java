@@ -1,5 +1,6 @@
-package com.tqa.btdanhba;
+package com.tqa.danhba;
 
+import android.annotation.SuppressLint;
 import android.content.Intent;
 import android.os.Bundle;
 
@@ -12,7 +13,7 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
-import com.tqa.btdanhba.model.Contact;
+import com.tqa.danhba.model.Contact;
 
 import java.util.ArrayList;
 
@@ -26,6 +27,7 @@ public class FragmentSetting extends Fragment {
     private MainActivity mMainActivity;
     private ArrayList<Contact> listContactFrag;
 
+    @SuppressLint("SetTextI18n")
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
@@ -34,9 +36,6 @@ public class FragmentSetting extends Fragment {
         mMainActivity = (MainActivity) getActivity();
         listContactFrag = new ArrayList<>();
         listContactFrag = (ArrayList<Contact>) mMainActivity.getListContact();
-//        for (Contact contact : listContactFrag = (ArrayList<Contact>) mMainActivity.getListContact()) {
-//            Toast.makeText(mMainActivity, contact.toString(), Toast.LENGTH_SHORT).show();
-//        }
 
         recieveDataFromMainActivity();
         edt_phoneNumber_frag_setting.setText(dataPhoneNumber);

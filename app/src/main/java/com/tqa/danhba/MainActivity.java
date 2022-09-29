@@ -1,4 +1,4 @@
-package com.tqa.btdanhba;
+package com.tqa.danhba;
 
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentTransaction;
@@ -12,8 +12,9 @@ import android.widget.Toast;
 
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
-import com.tqa.btdanhba.adapter.CustomAdapter;
-import com.tqa.btdanhba.model.Contact;
+
+import com.tqa.danhba.adapter.CustomAdapter;
+import com.tqa.danhba.model.Contact;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -118,7 +119,7 @@ public class MainActivity extends AppCompatActivity {
         Gson gson = new Gson();
 
         SharedPreferences.Editor editor = sharedPreferences.edit();
-        String json = gson.toJson(this.listContact);
+        String json = gson.toJson(listContact);
         editor.putString("list_contact", json);
         editor.apply();
     }
