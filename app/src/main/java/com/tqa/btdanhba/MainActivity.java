@@ -14,6 +14,7 @@ import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import com.tqa.btdanhba.adapter.CustomAdapter;
 import com.tqa.btdanhba.model.Contact;
+import com.tqa.btdanhba.model.FragmentSetting;
 
 import java.lang.reflect.Type;
 import java.util.ArrayList;
@@ -46,14 +47,19 @@ public class MainActivity extends AppCompatActivity {
         }
         customAdapter = new CustomAdapter(this, R.layout.row_item_contact, arrayContact);
         lv_danhBa.setAdapter(customAdapter);
+        lv_danhBa.setOnClickListener(view -> {
+            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+            fragmentTransaction.add(R.id.main_activity, new FragmentSetting(), "FragmentSetting");
+            fragmentTransaction.addToBackStack("FragSetting");
+            fragmentTransaction.commit();
+        });
         recieveDataFragmentAdd();
 
         imgbtn_add.setOnClickListener(v -> {
             FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
             fragmentTransaction.add(R.id.main_activity, new FragmentAdd(), "FragmentAdd");
-            fragmentTransaction.addToBackStack("add");
+            fragmentTransaction.addToBackStack("FragAdd");
             fragmentTransaction.commit();
-
         });
 
     }
