@@ -1,4 +1,4 @@
-package com.tqa.btdanhba.model;
+package com.tqa.danhba.model;
 
 import android.os.Parcel;
 import android.os.Parcelable;
