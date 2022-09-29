@@ -4,27 +4,29 @@ import androidx.appcompat.app.AppCompatActivity;
 import androidx.fragment.app.FragmentManager;
 import androidx.fragment.app.FragmentTransaction;
 
+import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.view.View;
 import android.widget.ImageButton;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import com.tqa.btdanhba.adapter.CustomAdapter;
 import com.tqa.btdanhba.model.Contact;
 
+import java.lang.reflect.Type;
 import java.util.ArrayList;
+import java.util.List;
 
 
 public class MainActivity extends AppCompatActivity {
     private CustomAdapter customAdapter;
     private ArrayList<Contact> arrayContact;
-
-
     private ListView lv_danhBa;
     private ImageButton imgbtn_add;
+    private SharedPreferences sharedPreferences;
     FragmentManager fragmentManager = getSupportFragmentManager();
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -32,20 +34,32 @@ public class MainActivity extends AppCompatActivity {
         setContentView(R.layout.activity_main);
         setWiget();
         arrayContact = new ArrayList<>();
+        //lay du lieu tu sharedPreferences
+        sharedPreferences = getSharedPreferences("dataContact", MODE_PRIVATE);
+        //lay du lieu tu sharedPreferences ra list
+        String stringListContact = sharedPreferences.getString("list_contact", null); //lay gia tri ra, neu k co thi gan la null
+        Gson gson = new Gson();
+        if (stringListContact != null) {
+            Type type = new TypeToken<List<Contact>>() {
+            }.getType();
+            arrayContact = gson.fromJson(stringListContact, type);
+        }
         customAdapter = new CustomAdapter(this, R.layout.row_item_contact, arrayContact);
         lv_danhBa.setAdapter(customAdapter);
+        recieveDataFragmentAdd();
 
-        imgbtn_add.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-                fragmentTransaction.add(R.id.main_activity, new FragmentAdd(), "FragmentAdd");
-                fragmentTransaction.addToBackStack("add");
-                fragmentTransaction.commit();
+        imgbtn_add.setOnClickListener(v -> {
+            FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+            fragmentTransaction.add(R.id.main_activity, new FragmentAdd(), "FragmentAdd");
+            fragmentTransaction.addToBackStack("add");
+            fragmentTransaction.commit();
 
-            }
         });
-//        Intent intent = getIntent();
+
+    }
+
+    private void recieveDataFragmentAdd() {
+        //        Intent intent = getIntent();
         Bundle bundle = getIntent().getExtras();
 //        Bundle bundle = getIntent().getExtras();
 //        Contact contact = (Contact) bundle.get("obj_contact");
@@ -61,7 +75,13 @@ public class MainActivity extends AppCompatActivity {
                 customAdapter.notifyDataSetChanged();
             }
         }
-        Toast.makeText(this, "OnCreate", Toast.LENGTH_SHORT).show();
+        //luu list vao sharedPreferences
+        Gson gson = new Gson();
+
+        SharedPreferences.Editor editor = sharedPreferences.edit();
+        String json = gson.toJson(arrayContact);
+        editor.putString("list_contact", json);
+        editor.apply();
     }
 
     public void setWiget() {
@@ -74,52 +94,11 @@ public class MainActivity extends AppCompatActivity {
 //    neu xuat hien o vi tri >=0  thi return true
         for (Contact o :
                 arrayContact) {
-            if (o.getmPhoneNumber().indexOf(contact.getmPhoneNumber()) >= 0) {
+            if (o.getmPhoneNumber().contains(contact.getmPhoneNumber())) {
                 return true;
             }
         }
         return false;
     }
-//    public void add_person(View view) {
-//        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
-//        fragmentTransaction.add(R.id.main_activity, new FragmentAdd(), "FragmentAdd");
-//        fragmentTransaction.addToBackStack("aaa");
-//        fragmentTransaction.commit();
-//    }
 
-    @Override
-    protected void onStart() {
-        Toast.makeText(this, "onStart", Toast.LENGTH_SHORT).show();
-        super.onStart();
-    }
-
-    @Override
-    protected void onPause() {
-        Toast.makeText(this, "onPause", Toast.LENGTH_SHORT).show();
-        super.onPause();
-    }
-
-    @Override
-    protected void onRestart() {
-        Toast.makeText(this, "onRestart", Toast.LENGTH_SHORT).show();
-        super.onRestart();
-    }
-
-    @Override
-    protected void onResume() {
-        Toast.makeText(this, "onResume", Toast.LENGTH_SHORT).show();
-        super.onResume();
-    }
-
-    @Override
-    protected void onStop() {
-        Toast.makeText(this, "onStop", Toast.LENGTH_SHORT).show();
-        super.onStop();
-    }
-
-    @Override
-    protected void onDestroy() {
-        Toast.makeText(this, "onDestroy", Toast.LENGTH_SHORT).show();
-        super.onDestroy();
-    }
 }
